@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="calculator">
+
+    <!-- Display -->
+    <input type="text" id="screen" readonly aria-label="Calculator display" />
+
+    <!-- Buttons -->
+    <div class="buttons">
+
+      <!-- Top row: Clear and Backspace -->
+      <button class="btn clear" data-action="clear">C</button>
+      <button class="btn backspace" data-action="backspace">←</button>
+      <button class="btn operator" data-operator="÷">÷</button>
+      <button class="btn operator" data-operator="×">×</button>
+
+      <!-- Number buttons -->
+      <button class="btn number" data-number="7">7</button>
+      <button class="btn number" data-number="8">8</button>
+      <button class="btn number" data-number="9">9</button>
+      <button class="btn operator" data-operator="-">-</button>
+
+      <button class="btn number" data-number="4">4</button>
+      <button class="btn number" data-number="5">5</button>
+      <button class="btn number" data-number="6">6</button>
+      <button class="btn operator" data-operator="+">+</button>
+
+      <button class="btn number" data-number="1">1</button>
+      <button class="btn number" data-number="2">2</button>
+      <button class="btn number" data-number="3">3</button>
+      <button class="btn equals" data-action="equals">=</button>
+
+      <button class="btn number zero" data-number="0">0</button>
+    </div>
+
+    <!-- History section -->
+    <div class="history">
+      <h3>History</h3>
+      <ul id="historyList"></ul>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
