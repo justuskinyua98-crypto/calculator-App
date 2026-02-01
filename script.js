@@ -3,129 +3,119 @@ const buttons = document.querySelectorAll(".btn");
 const historyList = document.getElementById("historyList");
 
 let currentInput = "";
+let firstValue = "";
+let operator = "";
 let history = [];
 
-// Format number with commas
-function formatNumber(num) {
-  if (num === "" || isNaN(num)) return num;
-  return Number(num).toLocaleString();
-}
-
-// Update screen function with commas
+// Update screen
 function updateScreen() {
-  let displayValue = currentInput;
-
-  // Format only numbers, leave operators as-is
-  displayValue = displayValue.replace(/\d+(\.\d+)?/g, (match) => {
-    return formatNumber(match);
-  });
-
-  screen.value = displayValue;
+  screen.value = currentInput || "0";
 }
 
-// Add calculation to history
+// Add history (bonus)
 function addHistory(entry) {
-  history.unshift(entry); // newest first
-  if (history.length > 5) history.pop(); // keep last 5
+  history.unshift(entry);
+  if (history.length > 5) history.pop();
   historyList.innerHTML = history.map(item => `<li>${item}</li>`).join("");
 }
 
-// Evaluate expression safely-ish
-function evaluateExpression(expr) {
-  const sanitized = expr.replace(/×/g, "*").replace(/÷/g, "/");
-  // allow only digits, operators, parentheses, decimal and spaces
-  if (!/^[0-9+\-*/().\s]+$/.test(sanitized)) {
-    throw new Error("Invalid characters in expression");
+// Handle basic arithmetic without eval
+function compute(a, b, op) {
+  a = parseFloat(a);
+  b = parseFloat(b);
+  switch(op) {
+    case "+": return a + b;
+    case "−": return a - b;
+    case "×": return a * b;
+    case "÷": return b !== 0 ? a / b : "Error";
+    default: return b;
   }
-  // prevent trailing operator (e.g. "2+")
-  if (/[*+\-\/.]$/.test(sanitized.trim())) {
-    throw new Error("Incomplete expression");
-  }
-  // use Function instead of eval (slightly safer)
-  return Function(`"use strict"; return (${sanitized})`)();
 }
 
-// Handle button clicks
-buttons.forEach(button => {
-  button.addEventListener("click", () => {
-    const number = button.dataset.number;
-    const operator = button.dataset.operator;
-    const action = button.dataset.action;
+// Button clicks
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const number = btn.dataset.number;
+    const op = btn.dataset.operator;
+    const action = btn.dataset.action;
 
-    if (action === "clear") {
+    if(action === "clear") {
       currentInput = "";
-      updateScreen();
-    } 
-    else if (action === "backspace") {
-      currentInput = currentInput.slice(0, -1);
+      firstValue = "";
+      operator = "";
       updateScreen();
     }
-    else if (action === "equals") {
-      try {
-        const result = evaluateExpression(currentInput);
-        addHistory(`${currentInput} = ${result}`);
-        currentInput = String(result);
+    else if(action === "backspace") {
+      currentInput = currentInput.slice(0,-1);
+      updateScreen();
+    }
+    else if(action === "equals") {
+      if(firstValue && operator) {
+        currentInput = compute(firstValue, currentInput, operator);
+        addHistory(`${firstValue} ${operator} ${currentInput} = ${currentInput}`);
+        firstValue = "";
+        operator = "";
         updateScreen();
-      } catch (err) {
-        screen.value = "Error";
-        currentInput = "";
       }
-    } 
-    else if (number) {
+    }
+    else if(number) {
       currentInput += number;
       updateScreen();
-    } 
-    else if (operator) {
-      currentInput += operator;
+    }
+    else if(op) {
+      if(firstValue && operator) {
+        currentInput = compute(firstValue, currentInput, operator);
+        firstValue = currentInput;
+      } else {
+        firstValue = currentInput;
+      }
+      operator = op;
+      currentInput = "";
       updateScreen();
     }
   });
 });
 
-// Keyboard support
-document.addEventListener("keydown", (e) => {
-  if (e.key >= "0" && e.key <= "9") { // numbers
+// Keyboard support (bonus)
+document.addEventListener("keydown", e => {
+  if(e.key >= "0" && e.key <= "9") {
     currentInput += e.key;
     updateScreen();
-    return;
   }
-
-  if (["+", "-", "*", "/"].includes(e.key)) {
-    const symbol = e.key === "*" ? "×" : e.key === "/" ? "÷" : e.key;
-    currentInput += symbol;
-    updateScreen();
-    return;
-  }
-
-  if (e.key === ".") {
-    currentInput += ".";
-    updateScreen();
-    return;
-  }
-
-  if (e.key === "Backspace") {
-    currentInput = currentInput.slice(0, -1);
-    updateScreen();
-    return;
-  }
-
-  if (e.key === "Escape") {
+  if(["+", "-", "*", "/"].includes(e.key)) {
+    const sym = e.key === "*" ? "×" : e.key === "/" ? "÷" : e.key === "-" ? "−" : "+";
+    if(firstValue && operator) {
+      currentInput = compute(firstValue, currentInput, operator);
+      firstValue = currentInput;
+    } else {
+      firstValue = currentInput;
+    }
+    operator = sym;
     currentInput = "";
     updateScreen();
-    return;
   }
-
-  if (e.key === "Enter") {
+  if(e.key === ".") {
+    currentInput += ".";
+    updateScreen();
+  }
+  if(e.key === "Backspace") {
+    currentInput = currentInput.slice(0,-1);
+    updateScreen();
+  }
+  if(e.key === "Escape") {
+    currentInput = "";
+    firstValue = "";
+    operator = "";
+    updateScreen();
+  }
+  if(e.key === "Enter") {
     e.preventDefault();
-    try {
-      const result = evaluateExpression(currentInput);
-      addHistory(`${currentInput} = ${result}`);
-      currentInput = String(result);
+    if(firstValue && operator) {
+      currentInput = compute(firstValue, currentInput, operator);
+      addHistory(`${firstValue} ${operator} ${currentInput} = ${currentInput}`);
+      firstValue = "";
+      operator = "";
       updateScreen();
-    } catch (err) {
-      screen.value = "Error";
-      currentInput = "";
     }
-    return;
   }
 });
