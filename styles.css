@@ -1,4 +1,4 @@
-/* Reset some default styles */
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,97 +6,123 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Body styling */
+/* Body */
 body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background: #f4f4f4;
 }
 
 /* Calculator container */
 .calculator {
-  background: #fff;
+  background: #1f2533; /* dark Figma style */
   padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+  border-radius: 20px;
   width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
-/* Display screen */
+/* Display */
 #screen {
   width: 100%;
   height: 60px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   text-align: right;
   font-size: 2rem;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background-color: #eaeaea;
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: none;
+  background-color: #2c3550;
+  color: white;
 }
 
 /* Buttons grid */
 .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
-/* Button styling */
+/* Buttons */
 .btn {
-  padding: 20px;
-  font-size: 1.5rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
   border: none;
-  border-radius: 10px;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #f0f0f0;
+  background-color: #3a405a; /* number buttons dark grey */
+  color: white;
 }
 
 /* Hover effect */
 .btn:hover {
-  background-color: #d6d6d6;
+  background-color: #505773;
 }
 
-/* Operators styling */
+/* Operators */
 .btn.operator {
-  background-color: #ff9500;
-  color: white;
+  background-color: #f5a623; /* orange */
 }
 
 .btn.operator:hover {
   background-color: #e08900;
 }
 
-/* Equals button styling */
+/* Equals */
 .btn.equals {
-  background-color: #34c759;
-  color: white;
-  grid-row: span 2;
+  background-color: #bfc3cf; /* light grey */
+  color: black;
 }
 
 .btn.equals:hover {
-  background-color: #28a745;
+  background-color: #aeb0b5;
 }
 
-/* Clear button styling */
+/* Clear */
 .btn.clear {
-  background-color: #ff3b30;
-  color: white;
+  background-color: #f5a623; /* match operators */
 }
 
 .btn.clear:hover {
-  background-color: #e02b20;
+  background-color: #e08900;
 }
 
-/* Zero button spans 2 columns */
-.btn.zero {
-  grid-column: span 2;
+/* Backspace (bonus) */
+.btn.backspace {
+  background-color: #f5a623;
 }
 
-/* Responsive design */
+.btn.backspace:hover {
+  background-color: #e08900;
+}
+
+/* History (bonus) */
+.history {
+  margin-top: 20px;
+  background: #232a40;
+  padding: 10px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.history h3 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.history ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+/* Responsive */
 @media screen and (max-width: 400px) {
   .calculator {
     width: 90%;
@@ -109,7 +135,8 @@ body {
   }
 
   .btn {
-    padding: 15px;
+    width: 50px;
+    height: 50px;
     font-size: 1.2rem;
   }
 }
