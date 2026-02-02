@@ -7,21 +7,19 @@ let firstValue = "";
 let operator = "";
 let history = [];
 
-// Update screen
+// Update display
 function updateScreen() {
   screen.value = currentInput || "0";
 }
 
-// Add history (max 5 items)
+// Add to history (max 5)
 function addHistory(entry) {
   history.unshift(entry);
   if (history.length > 5) history.pop();
-  historyList.innerHTML = history
-    .map(item => `<li>${item}</li>`)
-    .join("");
+  historyList.innerHTML = history.map(item => `<li>${item}</li>`).join("");
 }
 
-// Compute without eval
+// Perform calculation
 function compute(a, b, op) {
   const x = parseFloat(a);
   const y = parseFloat(b);
@@ -37,7 +35,7 @@ function compute(a, b, op) {
   }
 }
 
-// Button clicks
+// Button click handling
 buttons.forEach(btn => {
   btn.addEventListener("click", () => {
     const number = btn.dataset.number;
@@ -63,10 +61,8 @@ buttons.forEach(btn => {
     // Equals
     if (action === "equals") {
       if (firstValue && operator && currentInput !== "") {
-        const secondValue = currentInput;
-        const result = compute(firstValue, secondValue, operator);
-
-        addHistory(`${firstValue} ${operator} ${secondValue} = ${result}`);
+        const result = compute(firstValue, currentInput, operator);
+        addHistory(`${firstValue} ${operator} ${currentInput} = ${result}`);
 
         currentInput = result.toString();
         firstValue = "";
@@ -76,7 +72,7 @@ buttons.forEach(btn => {
       return;
     }
 
-    // Numbers & dot
+    // Numbers and decimal
     if (number) {
       if (number === "." && currentInput.includes(".")) return;
       currentInput += number;
@@ -84,17 +80,11 @@ buttons.forEach(btn => {
       return;
     }
 
-    // Operators
+    // Operators (FIXED LOGIC ✅)
     if (op) {
       if (currentInput === "") return;
 
-      if (firstValue && operator) {
-        currentInput = compute(firstValue, currentInput, operator).toString();
-        firstValue = currentInput;
-      } else {
-        firstValue = currentInput;
-      }
-
+      firstValue = currentInput;
       operator = op;
       currentInput = "";
       updateScreen();
@@ -102,7 +92,7 @@ buttons.forEach(btn => {
   });
 });
 
-// Keyboard support
+// Keyboard support (bonus)
 document.addEventListener("keydown", e => {
   if (e.key >= "0" && e.key <= "9") {
     currentInput += e.key;
@@ -122,13 +112,7 @@ document.addEventListener("keydown", e => {
       e.key === "/" ? "÷" :
       e.key === "-" ? "−" : "+";
 
-    if (firstValue && operator) {
-      currentInput = compute(firstValue, currentInput, operator).toString();
-      firstValue = currentInput;
-    } else {
-      firstValue = currentInput;
-    }
-
+    firstValue = currentInput;
     operator = sym;
     currentInput = "";
     updateScreen();
@@ -149,10 +133,8 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter") {
     e.preventDefault();
     if (firstValue && operator && currentInput !== "") {
-      const secondValue = currentInput;
-      const result = compute(firstValue, secondValue, operator);
-
-      addHistory(`${firstValue} ${operator} ${secondValue} = ${result}`);
+      const result = compute(firstValue, currentInput, operator);
+      addHistory(`${firstValue} ${operator} ${currentInput} = ${result}`);
 
       currentInput = result.toString();
       firstValue = "";
