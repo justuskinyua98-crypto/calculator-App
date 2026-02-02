@@ -23,26 +23,24 @@ function addHistory(entry) {
 function compute(a, b, op) {
   const x = parseFloat(a);
   const y = parseFloat(b);
-
   if (isNaN(x) || isNaN(y)) return "Error";
 
-  switch (op) {
+  switch(op) {
     case "+": return x + y;
-    case "−": return x - y;
+    case "−": return x - y; // Unicode minus
     case "×": return x * y;
     case "÷": return y !== 0 ? x / y : "Error";
     default: return y;
   }
 }
 
-// Button click handling
+// Handle number/operator buttons
 buttons.forEach(btn => {
   btn.addEventListener("click", () => {
     const number = btn.dataset.number;
     const op = btn.dataset.operator;
     const action = btn.dataset.action;
 
-    // Clear
     if (action === "clear") {
       currentInput = "";
       firstValue = "";
@@ -51,19 +49,16 @@ buttons.forEach(btn => {
       return;
     }
 
-    // Backspace
     if (action === "backspace") {
       currentInput = currentInput.slice(0, -1);
       updateScreen();
       return;
     }
 
-    // Equals
     if (action === "equals") {
       if (firstValue && operator && currentInput !== "") {
         const result = compute(firstValue, currentInput, operator);
         addHistory(`${firstValue} ${operator} ${currentInput} = ${result}`);
-
         currentInput = result.toString();
         firstValue = "";
         operator = "";
@@ -72,7 +67,6 @@ buttons.forEach(btn => {
       return;
     }
 
-    // Numbers and decimal
     if (number) {
       if (number === "." && currentInput.includes(".")) return;
       currentInput += number;
@@ -80,11 +74,17 @@ buttons.forEach(btn => {
       return;
     }
 
-    // Operators (FIXED LOGIC ✅)
     if (op) {
       if (currentInput === "") return;
 
-      firstValue = currentInput;
+      // If already have firstValue & operator, compute first
+      if (firstValue && operator) {
+        const result = compute(firstValue, currentInput, operator);
+        firstValue = result.toString();
+      } else {
+        firstValue = currentInput;
+      }
+
       operator = op;
       currentInput = "";
       updateScreen();
@@ -92,16 +92,18 @@ buttons.forEach(btn => {
   });
 });
 
-// Keyboard support (bonus)
+// Keyboard support
 document.addEventListener("keydown", e => {
   if (e.key >= "0" && e.key <= "9") {
     currentInput += e.key;
     updateScreen();
+    return;
   }
 
   if (e.key === "." && !currentInput.includes(".")) {
     currentInput += ".";
     updateScreen();
+    return;
   }
 
   if (["+", "-", "*", "/"].includes(e.key)) {
@@ -112,15 +114,23 @@ document.addEventListener("keydown", e => {
       e.key === "/" ? "÷" :
       e.key === "-" ? "−" : "+";
 
-    firstValue = currentInput;
+    if (firstValue && operator) {
+      const result = compute(firstValue, currentInput, operator);
+      firstValue = result.toString();
+    } else {
+      firstValue = currentInput;
+    }
+
     operator = sym;
     currentInput = "";
     updateScreen();
+    return;
   }
 
   if (e.key === "Backspace") {
     currentInput = currentInput.slice(0, -1);
     updateScreen();
+    return;
   }
 
   if (e.key === "Escape") {
@@ -128,6 +138,7 @@ document.addEventListener("keydown", e => {
     firstValue = "";
     operator = "";
     updateScreen();
+    return;
   }
 
   if (e.key === "Enter") {
@@ -135,11 +146,11 @@ document.addEventListener("keydown", e => {
     if (firstValue && operator && currentInput !== "") {
       const result = compute(firstValue, currentInput, operator);
       addHistory(`${firstValue} ${operator} ${currentInput} = ${result}`);
-
       currentInput = result.toString();
       firstValue = "";
       operator = "";
       updateScreen();
     }
+    return;
   }
 });
